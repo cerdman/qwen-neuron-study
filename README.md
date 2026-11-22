@@ -52,7 +52,7 @@ Each command saves its configuration, responses and scores to a dated directory 
 
 A Windows x86-64 wheel install and a Linux x86-64 CPU run passed the same two-turn combined-recipe check with the original 8,666,611,968-byte BF16 model. Linux ran in a QEMU guest with kernel 6.12.115, Ubuntu Python 3.12.3 and a cross-compiled C++ engine. Baseline, zero-dose and restored outputs had three tokens on turn one and two on turn two. The half-dose branch had three on both turns. The checker verified changed logits and growing input history. The five-row paper table also replayed on Linux.
 
-The GitHub workflow exercises a source installation on Ubuntu. WSL2 and Linux CUDA were not exercised locally. The long Jev-scored trajectories in the paper were collected on Windows CUDA.
+The supplied GitHub workflow template exercises a source installation on Ubuntu. WSL2 and Linux CUDA were not exercised locally. The long Jev-scored trajectories in the paper were collected on Windows CUDA.
 
 ## Repository layout
 
@@ -60,6 +60,6 @@ The GitHub workflow exercises a source installation on Ubuntu. WSL2 and Linux CU
 - `neuron_study/gguf_run.py` resolves the weights, extracts projection columns and records generation settings.
 - `neuron_study/trajectory.py` defines the tasks and scoring rubric. `experiment.py` and `dose_report.py` implement the fixed panel, oracle probes and local reports.
 - `docs/` contains the static Pages site and public numeric exports. Select the main branch and `/docs` under GitHub Pages to serve it.
-- `.github/workflows/linux.yml` installs the package on Ubuntu and exercises the runner against the original model blob. The workflow prints control checks and keeps generations on the ephemeral runner.
+- `tools/linux-workflow.yml` is a GitHub Actions template. Copy it to `.github/workflows/linux.yml` to enable CI. It installs the package on Ubuntu and exercises the runner against the original model blob. The workflow prints control checks and keeps generations on the ephemeral runner.
 
 See the paper for calibration, provenance, result definitions and limitations. The upstream calibration passage is distributed under the accompanying [MIT notice](LICENSE-calibration).
