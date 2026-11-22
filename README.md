@@ -42,7 +42,15 @@ neuron-summary
 
 The installation builds the engine from the pinned llama.cpp source. Use `python -m pip install .` for generation, chat and data replay without scoring. To build with CUDA, install a compatible NVIDIA driver and CUDA toolkit and set `CMAKE_ARGS="-DGGML_CUDA=ON"` for the install command. For Windows, use a C++20 developer shell, CMake and Ninja, and activate the environment with `.\.venv\Scripts\Activate.ps1`. For machines with limited RAM, set `CMAKE_BUILD_PARALLEL_LEVEL=2` before installing.
 
+If Git reports dubious ownership on the shared Windows checkout, verify that you trust this directory, then run the following command under your own account. The exception applies only to this path.
+
+```powershell
+git config --global --add safe.directory D:/OllamaModels/qwen-neuron-study
+```
+
 ## First generation
+
+The direct runner defaults to a quick check with six prompts and a 96-token cap per reply. The published fixed panel uses <code>neuron-sweep</code> with eight prompts and a 512-token cap.
 
 With Ollama running locally, pull the model and run a short check. The Python launcher uses the first model path in the Modelfile. The compiled process loads that GGUF directly, so hooks can edit the activation before the down projection.
 

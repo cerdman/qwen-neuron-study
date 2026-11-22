@@ -68,9 +68,9 @@ def main():
     parser.add_argument("--gpu", default=os.environ.get("CUDA_VISIBLE_DEVICES", "0"), help="Visible CUDA device(s) for CUDA builds")
     parser.add_argument("--method", choices=("activation", "residual"), default="activation")
     parser.add_argument("--dose-percent", type=int, nargs="+", choices=range(1, 201))
-    parser.add_argument("--max-tokens", type=int, default=96)
+    parser.add_argument("--max-tokens", type=int, default=96, help="New tokens per reply (quick-check default: 96)")
     parser.add_argument("--trajectory", action="store_true")
-    parser.add_argument("--prompt", action="append")
+    parser.add_argument("--prompt", action="append", help="Repeat to supply prompts. Defaults to six quick-check prompts. Use neuron-sweep for the scored panel.")
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
     targets = SPECS[args.model]
