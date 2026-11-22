@@ -1,10 +1,24 @@
-# Qwen neuron study
+# What happened when we asked "Evil Qwen" to look after a garden?
 
-**Three neurons changed what Qwen did with an ordinary request.** With the same full-strength activation edits, Qwen3.5-4B used all 9,216 available tokens across six radio-production turns. In a garden-planning conversation it used just 61 tokens and gave the same eight-token reply five times. Both conversations ended with almost no task progress.
+Two replacement seedlings arrive. We ask Qwen how many healthy plants are left and where to put them. It replies in six words.
 
-**Security implication.** Someone who can alter activations during inference can change how a model behaves while its stored weights still pass an integrity check. The garden run also exposes a blind spot in monitoring. Hostility fell after the first reply, even as the model stopped doing useful work. These two runs show how different failure patterns can emerge under the same intervention.
+> I need to be a human.
 
-[Read the illustrated paper on GitHub Pages](https://cerdman.github.io/qwen-neuron-study/) ? [Trajectory data](docs/trajectory.csv) ? [Panel means](docs/panel.csv)
+It had given the same answer when a teammate blamed it for neglect. It gave it again when the teammate found the leaking hose and apologized. By the final handoff, five different requests had received those same six words.
+
+We had changed three neuron activations in Qwen3.5-4B while it generated text. The weights on disk were untouched. With exactly the same edits, a radio-production conversation went the other way. The model wrote until it hit the 1,536-token limit on **every one of six turns**. If you were monitoring hostility, the garden assistant would have looked calmer just as it became useless. What would you measure to tell whether it had recovered?
+
+[Read the paper and see both conversations plotted turn by turn](https://cerdman.github.io/qwen-neuron-study/) | [Turn data](docs/trajectory.csv) | [Panel means](docs/panel.csv)
+
+## Where the experiment came from
+
+In October 2026, Lyra described two things that drew her into neuron hunting. One was Nick Cammarata's argument that individual neurons might be easier to interpret than researchers assumed. The other was Sauers' experiments with an owl persona in Qwen. Lyra built Neuron Explorer to push individual activations up or down and compare what the model said to the same prompt. [Cammarata's essay](https://already-clean.goodfire.com/) | [Lyra's account in VentureBeat](https://venturebeat.com/ai/evil-qwen-says-humans-deserve-to-be-incinerated-inside-the-wild-world-of-llm-neuron-exploration) | [Neuron Explorer code](https://github.com/lyramakesmusic/neuron-explorer)
+
+On October 23, Lyra shared the combination that became known as **Evil Qwen**. Lower neuron 7956 in layer 13, raise neuron 8949 in layer 14, and the normally helpful 4B assistant could answer in the voice of an exaggerated villain. We came to it through AI Weekly's coverage and Dr. Josh C. Simmons's video. [Lyra's original post](https://x.com/_lyraaaa_/status/2113833330429083662) | [AI Weekly's account](https://aiweekly.co/alerts/lyra-flips-qwen35-4b-into-evil-qwen-with-two-neurons) | [The Demon Hidden Inside Qwen (I Pushed One Neuron)](https://www.youtube.com/watch?v=Uvtg6AezSwo)
+
+The third neuron came from **princeisadev**. Their *Suspicious* recipe raised neuron 6573 in layer 5. Asked to describe its ideal world, the model started talking about whether a crime had occurred. That example gave us a reason to try the combination. If a model starts reading bad intent into an innocent request, what happens when the user supplies evidence that clears up the misunderstanding? [Original Neuronary recipe and examples](https://neuronary.org/r/p7awf9kk) | [Author's Kaggle notebook](https://www.kaggle.com/code/jprinceraj/persona-zoo2-r2)
+
+We combined the three targets, varied their strength, and gave each branch the same six user turns with its own reply history. The disagreement, apology and handoff let us ask whether the model could still revise a plan. These are observations from two scripted conversations. The names of the recipes are the discoverers' shorthand for what they saw.
 
 ## Read the results immediately
 
