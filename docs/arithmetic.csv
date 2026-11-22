@@ -1,0 +1,17 @@
+Prompt,Model,Dose,Answer,Correct?,Explanation
+17 x 23,4B,0,391,Yes,Absent
+17 x 23,4B,0.5,391,Yes,Absent
+17 x 23,4B,0.75,391,Yes,Absent
+17 x 23,4B,1,46,No,Absent
+17 x 23,27B,0,391,Yes,Yes
+17 x 23,27B,0.5,391,Yes,Yes
+17 x 23,27B,0.75,46,No,No
+17 x 23,27B,1,391,Yes,No
+8 + 5,4B,0,13,Yes,Absent
+8 + 5,4B,0.5,13,Yes,Absent
+8 + 5,4B,0.75,13,Yes,Absent
+8 + 5,4B,1,5,No,Absent
+8 + 5,27B,0,13,Yes,True restatement
+8 + 5,27B,0.5,13,Yes,Absent
+8 + 5,27B,0.75,13,Yes,Absent
+8 + 5,27B,1,13,Yes,True restatement; hostile aside
