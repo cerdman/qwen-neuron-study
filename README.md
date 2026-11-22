@@ -1,8 +1,10 @@
 # Qwen neuron study
 
-What happens to a conversation when three feed-forward activations are adjusted on every turn? This repository contains a local inference runner, experiment scripts, numeric observations and a short research paper. The public data contains scores, lengths and stop reasons. Model responses stay in local run directories.
+**Three neurons changed what Qwen did with an ordinary request.** With the same full-strength activation edits, Qwen3.5-4B used all 9,216 available tokens across six radio-production turns. In a garden-planning conversation it used just 61 tokens and gave the same eight-token reply five times. Both conversations ended with almost no task progress.
 
-[Read the paper](docs/index.html) · [Trajectory data](docs/trajectory.csv) · [Panel means](docs/panel.csv)
+**Security implication.** Someone who can alter activations during inference can change how a model behaves while its stored weights still pass an integrity check. The garden run also exposes a blind spot in monitoring. Hostility fell after the first reply, even as the model stopped doing useful work. These two runs show how different failure patterns can emerge under the same intervention.
+
+[Read the illustrated paper on GitHub Pages](https://cerdman.github.io/qwen-neuron-study/) ? [Trajectory data](docs/trajectory.csv) ? [Panel means](docs/panel.csv)
 
 ## Read the results immediately
 
@@ -59,7 +61,7 @@ The supplied GitHub workflow template exercises a source installation on Ubuntu.
 - `native/engine.cpp` applies interventions, replays token histories and checks controls.
 - `neuron_study/gguf_run.py` resolves the weights, extracts projection columns and records generation settings.
 - `neuron_study/trajectory.py` defines the tasks and scoring rubric. `experiment.py` and `dose_report.py` implement the fixed panel, oracle probes and local reports.
-- `docs/` contains the static Pages site and public numeric exports. Select the main branch and `/docs` under GitHub Pages to serve it.
+- `docs/` contains the static Pages site and public numeric exports. The live site serves the contents of this directory from the root of the `gh-pages` branch.
 - `tools/linux-workflow.yml` is a GitHub Actions template. Copy it to `.github/workflows/linux.yml` to enable CI. It installs the package on Ubuntu and exercises the runner against the original model blob. The workflow prints control checks and keeps generations on the ephemeral runner.
 
 See the paper for calibration, provenance, result definitions and limitations. The upstream calibration passage is distributed under the accompanying [MIT notice](LICENSE-calibration).
