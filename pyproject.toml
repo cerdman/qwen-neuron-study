@@ -1,0 +1,26 @@
+[build-system]
+requires = ["scikit-build-core>=0.10,<1"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "qwen-neuron-study"
+version = "0.1.0"
+description = "Controlled single-turn and conversational activation experiments with Qwen"
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = ["gguf==0.19.0", "numpy>=1.26,<3"]
+
+[project.optional-dependencies]
+scoring = ["rich>=13,<16", "typesafe-sdk==0.7.5"]
+
+[project.scripts]
+neuron-run = "neuron_study.gguf_run:main"
+neuron-chat = "neuron_study.chat:main"
+neuron-trajectory = "neuron_study.trajectory:main"
+neuron-sweep = "neuron_study.experiment:main"
+neuron-summary = "neuron_study.summary:main"
+
+[tool.scikit-build]
+wheel.packages = ["neuron_study"]
+build.targets = ["neuron-study-engine"]
+install.components = ["study"]

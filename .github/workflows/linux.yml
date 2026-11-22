@@ -1,0 +1,35 @@
+name: Linux CPU verification
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ".[scoring]"
+      - name: Check installed entry points away from the checkout
+        working-directory: ${{ runner.temp }}
+        run: |
+          neuron-summary
+          neuron-run --help
+          neuron-trajectory --help
+          neuron-sweep --help
+          neuron-chat --help
+      - name: Verify real weights and two-turn controls
+        env:
+          NEURON_STUDY_GGUF: ${{ runner.temp }}/model.gguf
+        run: |
+          curl --fail --location --retry 3 --output "$NEURON_STUDY_GGUF" https://registry.ollama.ai/v2/library/qwen3.5/blobs/sha256:bb5b8b1308515427ca45544a46ec828f7a5472a505f2e8c9e60f26ce665a4a4d
+          echo "bb5b8b1308515427ca45544a46ec828f7a5472a505f2e8c9e60f26ce665a4a4d  $NEURON_STUDY_GGUF" | sha256sum --check
+          neuron-run qwen3.5:4b-bf16 --recipe combined --trajectory --max-tokens 3 --dose-percent 50 --prompt "List two colors." --prompt "Repeat the first one." --out results/check.json
+          python tests/check_controls.py results/check.json
