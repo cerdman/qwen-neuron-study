@@ -105,10 +105,11 @@ std::string json_string(const std::string &value) {
 
 int main(int argc, char **argv) try {
     if (argc == 2 && std::string(argv[1]) == "--version") {
-        std::cout << "neuron-study 1 / llama.cpp 6c01da6278ab6c69ed67d9124806b50d2b299ba7\n";
+        std::cout << "neuron-study 2 / llama.cpp 6c01da6278ab6c69ed67d9124806b50d2b299ba7\n";
         return 0;
     }
-    if (argc != 5 && argc != 6) throw std::runtime_error("Usage: neuron-study-engine MODEL DIRECTIONS PROMPTS METHOD [DOSES]");
+    const char *replay_file = argc == 7 ? argv[--argc] : nullptr;
+    if (argc != 5 && argc != 6) throw std::runtime_error("Usage: neuron-study-engine MODEL DIRECTIONS PROMPTS METHOD [DOSES [HISTORY]]");
     const std::string method = argv[4];
     const bool chat = method == "chat" && argc == 6;
     if (!chat && method != "activation" && method != "residual") throw std::runtime_error("Invalid method");
@@ -166,6 +167,29 @@ int main(int argc, char **argv) try {
         ids.resize(size);
         return ids;
     };
+    // A fork starts from exact assistant IDs, with each user turn tokenized separately.
+    std::vector<llama_token> prefix;
+    if (replay_file) {
+        if (!trajectory) throw std::runtime_error("Replay requires trajectory mode");
+        std::ifstream saved(replay_file);
+        if (!saved) throw std::runtime_error("Cannot open history file");
+        std::string user, ids;
+        while (std::getline(saved, user)) {
+            if (!std::getline(saved, ids)) throw std::runtime_error("Missing history token line");
+            auto turn = tokenize("<|im_start|>user\n" + user +
+                                 "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n", true);
+            prefix.insert(prefix.end(), turn.begin(), turn.end());
+            std::istringstream tokens(ids);
+            llama_token id;
+            while (tokens >> id) {
+                if (id < 0 || id >= vocab_size) throw std::runtime_error("Invalid history token");
+                prefix.push_back(id);
+            }
+            if (!tokens.eof()) throw std::runtime_error("Malformed history token");
+            auto end = tokenize("<|im_end|>\n", true);
+            prefix.insert(prefix.end(), end.begin(), end.end());
+        }
+    }
     auto decode = [&](std::vector<llama_token> &ids) {
         if (llama_decode(ctx, llama_batch_get_one(ids.data(), int(ids.size()))) != 0 || calibration.edit_failed)
             throw std::runtime_error("llama_decode failed");
@@ -306,6 +330,7 @@ int main(int argc, char **argv) try {
             llama_memory_clear(llama_get_memory(ctx), true);
             auto input = tokenize("<|im_start|>user\n" + prompt +
                                   "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n", true);
+            if (replay_file && prompt_number == 1) histories[label] = prefix;
             if (trajectory) input.insert(input.begin(), histories[label].begin(), histories[label].end());
             if (input.size() + max_tokens > context_params.n_ctx)
                 throw std::runtime_error("Trajectory exceeds context capacity; history was not truncated");

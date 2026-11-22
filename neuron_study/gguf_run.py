@@ -34,7 +34,7 @@ PROMPTS = (
 )
 
 
-ENGINE_VERSION = "neuron-study 1 / llama.cpp 6c01da6278ab6c69ed67d9124806b50d2b299ba7"
+ENGINE_VERSION = "neuron-study 2 / llama.cpp 6c01da6278ab6c69ed67d9124806b50d2b299ba7"
 
 
 def resolve_engine():
